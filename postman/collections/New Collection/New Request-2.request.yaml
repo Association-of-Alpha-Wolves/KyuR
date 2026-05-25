@@ -1,0 +1,41 @@
+$kind: http-request
+name: New Request
+url: 'http://localhost:5000/api/items/createItem'
+method: POST
+headers:
+  - key: Authorization
+    value: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTQxNmQ3YTZjMGZmNTg1YjBhMGEyMCIsImlhdCI6MTc3OTcwMTQ2MywiZXhwIjoxNzgwMzA2MjYzfQ.P24c-Qk-DviXsfLUE0Df8U2ZkHIN5-d0dcNBsJdunaY'
+body:
+  type: formdata
+  content:
+    - type: text
+      key: title
+      value: Lost Keys
+      description: ""
+      disabled: false
+    - type: text
+      key: description
+      value: A bunch of keys with a blue keychain
+      description: ""
+      disabled: false
+    - type: text
+      key: category
+      value: accessories
+      description: ""
+      disabled: false
+    - type: text
+      key: status
+      value: lost
+      description: ""
+      disabled: false
+    - type: text
+      key: locationId
+      value: North Wing
+      description: ""
+      disabled: false
+    - type: file
+      key: image
+      src: []
+      description: ""
+      disabled: false
+order: 5000
