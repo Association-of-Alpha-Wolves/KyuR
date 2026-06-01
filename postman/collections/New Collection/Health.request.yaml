@@ -1,0 +1,5 @@
+$kind: http-request
+name: Health
+url: http://localhost:5000/health
+method: GET
+order: 1000

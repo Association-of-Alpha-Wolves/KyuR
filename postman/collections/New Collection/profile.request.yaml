@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:5000/api/auth/profile?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTQxNmQ3YTZjMGZmNTg1YjBhMGEyMCIsImlhdCI6MTc3OTcwMTQ2MywiZXhwIjoxNzgwMzA2MjYzfQ.P24c-Qk-DviXsfLUE0Df8U2ZkHIN5-d0dcNBsJdunaY
+method: GET
+queryParams:
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTQxNmQ3YTZjMGZmNTg1YjBhMGEyMCIsImlhdCI6MTc3OTcwMTQ2MywiZXhwIjoxNzgwMzA2MjYzfQ.P24c-Qk-DviXsfLUE0Df8U2ZkHIN5-d0dcNBsJdunaY
+order: 4000

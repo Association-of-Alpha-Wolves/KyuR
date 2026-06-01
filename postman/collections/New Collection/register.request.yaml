@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:5000/api/auth/register
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Jane Doe\",\r
+
+    \  \"email\": \"jane@iskolarngbayan.pup.edu.ph\",\r
+
+    \  \"password\": \"password123\"\r
+
+    }"
+order: 2000

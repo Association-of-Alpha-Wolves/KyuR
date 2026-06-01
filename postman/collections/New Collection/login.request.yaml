@@ -1,0 +1,16 @@
+$kind: http-request
+name: login
+url: http://localhost:5000/api/auth/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTQxNmQ3YTZjMGZmNTg1YjBhMGEyMCIsImlhdCI6MTc3OTcwMTQ2MywiZXhwIjoxNzgwMzA2MjYzfQ.P24c-Qk-DviXsfLUE0Df8U2ZkHIN5-d0dcNBsJdunaY
+method: POST
+queryParams:
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMTQxNmQ3YTZjMGZmNTg1YjBhMGEyMCIsImlhdCI6MTc3OTcwMTQ2MywiZXhwIjoxNzgwMzA2MjYzfQ.P24c-Qk-DviXsfLUE0Df8U2ZkHIN5-d0dcNBsJdunaY
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"jane@iskolarngbayan.pup.edu.ph\",\r
+
+    \  \"password\": \"password123\"\r
+
+    }"
+order: 3000
