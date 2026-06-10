@@ -3,7 +3,7 @@ import {
   registerUser,
   loginUser,
   getProfile,
-  verifyEmail,
+  updateProfile,
   forgotPassword,
   resetPassword,
 } from '../controllers/authController.js';
@@ -14,9 +14,9 @@ const router = Router();
 
 router.post('/register', authLimiter, registerUser);
 router.post('/login', authLimiter, loginUser);
-router.get('/verify/:token', verifyEmail);
 router.post('/forgotpassword', authLimiter, forgotPassword);
 router.put('/resetpassword/:token', resetPassword);
 router.get('/profile', protect, getProfile);
+router.put('/profile', protect, updateProfile);
 
 export default router;

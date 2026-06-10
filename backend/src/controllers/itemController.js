@@ -161,9 +161,14 @@ export const updateItemStatus = asyncHandler(async (req, res) => {
     throw error;
   }
 
+  if (item.reportedBy.toString() !== req.user._id.toString()) {
+    const error = new Error('Not authorized to update this item');
+    error.statusCode = 403;
+    throw error;
+  }
+
   item.status = status;
 
-  // Assign claimedBy when the item is marked as claimed; clear it otherwise
   if (status === 'claimed') {
     item.claimedBy = req.user._id;
   } else {
@@ -175,5 +180,38 @@ export const updateItemStatus = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: updatedItem,
+  });
+});
+
+/**
+ * @route   DELETE /api/items/:id
+ * @access  Private
+ */
+export const deleteItem = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const error = new Error('Invalid item ID');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const item = await Item.findById(req.params.id);
+
+  if (!item) {
+    const error = new Error('Item not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (item.reportedBy.toString() !== req.user._id.toString()) {
+    const error = new Error('Not authorized to delete this item');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  await item.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    message: 'Item deleted successfully',
   });
 });

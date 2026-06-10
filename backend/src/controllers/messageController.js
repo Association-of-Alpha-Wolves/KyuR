@@ -17,15 +17,28 @@ export const getMessagesByItem = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  const messages = await Message.find({ item: itemId })
-    .populate('sender', 'name _id')
-    .populate('receiver', 'name _id')
-    .sort({ createdAt: 1 }); // ascending — oldest message first
+  const page  = Math.max(1, parseInt(req.query.page,  10) || 1);
+  const limit = Math.max(1, parseInt(req.query.limit, 10) || 50);
+  const skip  = (page - 1) * limit;
+
+  const [total, messages] = await Promise.all([
+    Message.countDocuments({ item: itemId }),
+    Message.find({ item: itemId })
+      .populate('sender', 'name _id')
+      .populate('receiver', 'name _id')
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit),
+  ]);
 
   res.status(200).json({
     success: true,
-    count: messages.length,
-    data: messages,
+    data: {
+      messages,
+      page,
+      pages: Math.ceil(total / limit),
+      total,
+    },
   });
 });
 

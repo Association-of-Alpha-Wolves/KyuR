@@ -40,7 +40,7 @@ describe('POST /api/auth/register', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data.token).toBeDefined();
     expect(res.body.data.email).toBe('juan.delacruz@iskolarngbayan.pup.edu.ph');
-    expect(res.body.data.isVerified).toBe(false);
+    expect(res.body.data.isVerified).toBe(true);
   });
 
   it('returns 400 when a non-PUP email domain is used', async () => {
