@@ -35,15 +35,7 @@ const userSchema = new Schema(
     },
     isVerified: {
       type: Boolean,
-      default: false,
-    },
-    verificationToken: {
-      type: String,
-      default: null,
-    },
-    verificationTokenExpire: {
-      type: Date,
-      default: null,
+      default: true,
     },
     resetPasswordToken: {
       type: String,
@@ -73,27 +65,6 @@ userSchema.methods.getResetPasswordToken = function () {
     .digest('hex');
 
   this.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
-
-  return rawToken;
-};
-
-/**
- * Generates a verification token, stores its SHA-256 hash on the document,
- * and returns the raw (unhashed) token to be sent in the email link.
- *
- * The raw token is never persisted — only the hash is stored in the DB.
- * This means a stolen DB dump cannot be used to verify an account directly.
- */
-userSchema.methods.createEmailVerificationToken = function () {
-  const rawToken = crypto.randomBytes(32).toString('hex');
-
-  this.verificationToken = crypto
-    .createHash('sha256')
-    .update(rawToken)
-    .digest('hex');
-
-  // Token expires in 24 hours
-  this.verificationTokenExpire = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   return rawToken;
 };

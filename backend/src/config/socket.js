@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import Message from '../models/Message.js';
+import Item from '../models/Item.js';
 
 let io;
 
@@ -39,10 +41,37 @@ export const initializeSocket = (httpServer) => {
     // ── join_room ──────────────────────────────────────────────────────────────
     // Client emits: { itemId: string }
     // The item's _id is used as the room name, scoping all messages to that item.
-    socket.on('join_room', ({ itemId }) => {
-      if (!itemId) return;
-      socket.join(itemId);
-      console.log(`Socket ${socket.id} joined room: ${itemId}`);
+    socket.on('join_room', async ({ itemId }) => {
+      if (!itemId || !mongoose.Types.ObjectId.isValid(itemId)) {
+        socket.emit('error', { message: 'Invalid item ID' });
+        return;
+      }
+
+      try {
+        const item = await Item.findById(itemId).select('_id reportedBy');
+        if (!item) {
+          socket.emit('error', { message: 'Item not found' });
+          return;
+        }
+
+        const userId = socket.data.userId;
+        const isReporter = item.reportedBy.toString() === userId;
+        const hasMessages = await Message.exists({
+          item: itemId,
+          $or: [{ sender: userId }, { receiver: userId }],
+        });
+
+        if (!isReporter && !hasMessages) {
+          socket.emit('error', { message: 'Not authorized to join this room' });
+          return;
+        }
+
+        socket.join(itemId);
+        console.log(`Socket ${socket.id} joined room: ${itemId}`);
+      } catch (err) {
+        console.error(`join_room error (itemId: ${itemId}):`, err.message);
+        socket.emit('error', { message: 'Failed to join room' });
+      }
     });
 
     // ── send_message ───────────────────────────────────────────────────────────
@@ -101,11 +130,16 @@ export const initializeSocket = (httpServer) => {
       if (!messageId || !itemId) return;
 
       try {
-        await Message.findByIdAndUpdate(messageId, { isRead: true });
+        const message = await Message.findById(messageId);
+        if (!message) return;
+
+        if (message.receiver.toString() !== socket.data.userId) return;
+
+        message.isRead = true;
+        await message.save();
         socket.to(itemId).emit('message_read', { messageId });
       } catch (err) {
         console.error(`mark_read error (messageId: ${messageId}):`, err.message);
-        // No client-facing error emitted — a failed read receipt is non-critical
       }
     });
 

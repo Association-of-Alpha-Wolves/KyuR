@@ -4,6 +4,7 @@ import {
   getItems,
   getItemById,
   updateItemStatus,
+  deleteItem,
 } from '../controllers/itemController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/uploadMiddleware.js';
@@ -17,5 +18,6 @@ router.post('/createItem', upload.single('image'), createItem);
 router.get('/getItems', getItems);
 router.get('/:id', getItemById);
 router.put('/:id/status', updateItemStatus);
+router.delete('/:id', deleteItem);
 
 export default router;
