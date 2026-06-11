@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Brand from "../components/Brand";
+import AnimatedBg from "../components/AnimatedBg";
 import { apiRequest } from "../services/api";
 
 export default function ForgotPasswordPage() {
@@ -37,12 +38,13 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="authPage">
+    <main className="authPage" style={{ position: "relative" }}>
+      <AnimatedBg />
       <Link to="/" className="brandLink"><Brand /></Link>
 
-      <section className="authCard">
+      <section className="authCard" style={{ position: "relative", zIndex: 1 }}>
         <h1>Forgot Password</h1>
-        <p>Enter your PUP email and we’ll send a reset link.</p>
+        <p>Enter your PUP email and we'll send a reset link.</p>
 
         <form onSubmit={handleSubmit} className="authForm">
           {status.error && <p className="formError">{status.error}</p>}
@@ -50,11 +52,16 @@ export default function ForgotPasswordPage() {
 
           <label>
             Email
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input
+              type="email"
+              placeholder="yourname@iskolarngbayan.pup.edu.ph"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </label>
 
           <button className="primaryBtn fullBtn" disabled={loading}>
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading ? "Sending…" : "Send Reset Link"}
           </button>
 
           <div className="authLinks">

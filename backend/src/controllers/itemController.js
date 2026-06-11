@@ -68,7 +68,7 @@ export const createItem = asyncHandler(async (req, res) => {
  * @query   page (default 1), limit (default 10) — pagination
  */
 export const getItems = asyncHandler(async (req, res) => {
-  const { status, category, locationId, search } = req.query;
+  const { status, category, locationId, search, reportedBy } = req.query;
 
   // Pagination params — coerce to integers and guard against bad input
   const page  = Math.max(1, parseInt(req.query.page,  10) || 1);
@@ -80,6 +80,9 @@ export const getItems = asyncHandler(async (req, res) => {
   if (status)     query.status     = status;
   if (category)   query.category   = category;
   if (locationId) query.locationId = locationId;
+  if (reportedBy && mongoose.Types.ObjectId.isValid(reportedBy)) {
+    query.reportedBy = reportedBy;
+  }
 
   // Full-text search uses the { title: 'text', description: 'text' } index.
   // Cannot be combined with a regex filter on the same fields — keep them separate.

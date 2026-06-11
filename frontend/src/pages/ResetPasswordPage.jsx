@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Brand from "../components/Brand";
+import AnimatedBg from "../components/AnimatedBg";
 import { apiRequest } from "../services/api";
 
 export default function ResetPasswordPage() {
@@ -32,7 +33,7 @@ export default function ResetPasswordPage() {
         body: JSON.stringify({ password: form.password }),
       });
 
-      setStatus({ error: "", success: "Password reset! Redirecting to login..." });
+      setStatus({ error: "", success: "Password reset! Redirecting to login…" });
       setTimeout(() => navigate("/login"), 1200);
     } catch (err) {
       setStatus({ error: err.message || "Invalid or expired token.", success: "" });
@@ -42,10 +43,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="authPage">
+    <main className="authPage" style={{ position: "relative" }}>
+      <AnimatedBg />
       <Link to="/" className="brandLink"><Brand /></Link>
 
-      <section className="authCard">
+      <section className="authCard" style={{ position: "relative", zIndex: 1 }}>
         <h1>Reset Password</h1>
         <p>Create a new password for your KyuR account.</p>
 
@@ -53,11 +55,27 @@ export default function ResetPasswordPage() {
           {status.error && <p className="formError">{status.error}</p>}
           {status.success && <p className="formSuccess">{status.success}</p>}
 
-          <label>New Password<input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></label>
-          <label>Confirm Password<input type="password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} required /></label>
+          <label>
+            New Password
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Confirm Password
+            <input
+              type="password"
+              value={form.confirmPassword}
+              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+              required
+            />
+          </label>
 
           <button className="primaryBtn fullBtn" disabled={loading}>
-            {loading ? "Resetting..." : "Reset Password"}
+            {loading ? "Resetting…" : "Reset Password"}
           </button>
 
           <div className="authLinks">

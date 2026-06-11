@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import Brand from "../components/Brand";
+import AnimatedBg from "../components/AnimatedBg";
 import { apiRequest } from "../services/api";
 
 export default function LoginPage() {
@@ -40,7 +41,7 @@ export default function LoginPage() {
           Email
           <input
             type="email"
-            placeholder="yourname@iskolarnbayan.pup.edu.ph"
+            placeholder="yourname@iskolarngbayan.pup.edu.ph"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
@@ -57,13 +58,13 @@ export default function LoginPage() {
               required
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </label>
 
         <button className="primaryBtn fullBtn" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Logging in…" : "Login"}
         </button>
 
         <div className="authLinks">
@@ -77,9 +78,10 @@ export default function LoginPage() {
 
 function AuthShell({ title, subtitle, children }) {
   return (
-    <main className="authPage">
+    <main className="authPage" style={{ position: "relative" }}>
+      <AnimatedBg />
       <Link to="/" className="brandLink"><Brand /></Link>
-      <section className="authCard">
+      <section className="authCard" style={{ position: "relative", zIndex: 1 }}>
         <h1>{title}</h1>
         <p>{subtitle}</p>
         {children}

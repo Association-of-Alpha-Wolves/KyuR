@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Brand from "../components/Brand";
+import AnimatedBg from "../components/AnimatedBg";
 import { apiRequest } from "../services/api";
 
 const PUP_DOMAIN = "@iskolarngbayan.pup.edu.ph";
@@ -50,10 +51,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="authPage">
+    <main className="authPage" style={{ position: "relative" }}>
+      <AnimatedBg />
       <Link to="/" className="brandLink"><Brand /></Link>
 
-      <section className="authCard">
+      <section className="authCard" style={{ position: "relative", zIndex: 1 }}>
         <h1>Create Account</h1>
         <p>Register with your official PUP email.</p>
 
@@ -61,13 +63,45 @@ export default function RegisterPage() {
           {status.error && <p className="formError">{status.error}</p>}
           {status.success && <p className="formSuccess">{status.success}</p>}
 
-          <label>Full Name<input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} required /></label>
-          <label>PUP Email<input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></label>
-          <label>Password<input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></label>
-          <label>Confirm Password<input type="password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} required /></label>
+          <label>
+            Full Name
+            <input
+              value={form.fullName}
+              onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+              required
+            />
+          </label>
+          <label>
+            PUP Email
+            <input
+              type="email"
+              placeholder={`yourname${PUP_DOMAIN}`}
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Confirm Password
+            <input
+              type="password"
+              value={form.confirmPassword}
+              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+              required
+            />
+          </label>
 
           <button className="primaryBtn fullBtn" disabled={loading}>
-            {loading ? "Creating..." : "Create Account"}
+            {loading ? "Creating…" : "Create Account"}
           </button>
 
           <div className="authLinks">

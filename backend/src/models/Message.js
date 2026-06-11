@@ -4,11 +4,15 @@ const { Schema, model } = mongoose;
 
 const messageSchema = new Schema(
   {
+    conversation: {
+      type: Schema.Types.ObjectId,
+      ref: 'Conversation',
+      required: [true, 'Conversation reference is required'],
+    },
     item: {
       type: Schema.Types.ObjectId,
       ref: 'Item',
       required: [true, 'Item reference is required'],
-      // Used as the Socket.io room identifier (e.g., room = item._id.toString())
     },
     sender: {
       type: Schema.Types.ObjectId,

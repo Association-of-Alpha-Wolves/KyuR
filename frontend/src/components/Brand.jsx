@@ -1,15 +1,9 @@
-import { PackageCheck } from "lucide-react";
+import kyurLogo from "../assets/logo-kyur.svg";
 
 export default function Brand() {
   return (
     <div className="brand">
-      <div className="brandMark">
-        <PackageCheck size={34} />
-      </div>
-      <div>
-        <strong>KyuR</strong>
-        <span></span>
-      </div>
+      <img src={kyurLogo} alt="KyuR Logo" style={{ height: 40, width: "auto", display: "block", transform: "scale(2)", transformOrigin: "left center", marginLeft: -25 }} />
     </div>
   );
 }
