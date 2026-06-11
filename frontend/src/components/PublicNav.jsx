@@ -26,6 +26,7 @@ export default function PublicNav({ showScrollProgress = false }) {
         <a href="#home">Home</a>
         <a href="#why-choose-kyur">How It Works</a>
         <a href="#about">About</a>
+        <Link to="/items">Hall of Lost and Founds</Link>
       </nav>
 
       {isLoggedIn ? (

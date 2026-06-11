@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { apiRequest } from '../services/api'
 
 export default function ProfileSettings({ user, onProfileUpdate }) {
   const [name, setName] = useState(user.name || '')
@@ -31,15 +32,28 @@ export default function ProfileSettings({ user, onProfileUpdate }) {
 
     setIsLoading(true)
 
-    // Mock API Delay
-    setTimeout(() => {
-      setIsLoading(false)
-      setSuccessMsg('Profile updated successfully! (Mocked)')
-      onProfileUpdate({ name: name.trim() })
+    try {
+      const body = { name: name.trim() }
+      if (newPassword) {
+        body.currentPassword = currentPassword
+        body.newPassword = newPassword
+      }
+
+      const res = await apiRequest('/api/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      })
+
+      setSuccessMsg('Profile updated successfully!')
+      onProfileUpdate({ name: res.data.name })
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-    }, 1000)
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to update profile.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

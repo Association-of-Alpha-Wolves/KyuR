@@ -3,8 +3,9 @@ import { SocketProvider } from "./context/SocketContext.jsx";
 import NotificationToast from "./components/NotificationToast.jsx";
 
 function PrivateRoute({ children }) {
-  // TEMPORARY: Bypass auth for frontend-only development
-  // return localStorage.getItem("kyurToken") ? children : <Navigate to="/login" replace />;
+  if (!localStorage.getItem("kyurToken")) {
+    return <Navigate to="/login" replace />;
+  }
   return (
     <SocketProvider>
       {children}
@@ -23,6 +24,7 @@ import BrowseItemsPage from "./BrowseItemPage/BrowseItemsPage.jsx";
 import ReportItemPage from "./ReportItemPage/ReportItemPage.jsx";
 import ItemDetailPage from "./ItemDetailPage/ItemDetailPage.jsx";
 import ProfilePage from "./ProfilePage/ProfilePage.jsx";
+import AdminDashboardPage from "./AdminDashboardPage/AdminDashboardPage.jsx";
 
 export default function App() {
   return (
@@ -33,10 +35,16 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-      <Route path="/items" element={<PrivateRoute><BrowseItemsPage /></PrivateRoute>} />
+      <Route path="/items" element={
+        <SocketProvider>
+          <BrowseItemsPage />
+          <NotificationToast />
+        </SocketProvider>
+      } />
       <Route path="/items/report" element={<PrivateRoute><ReportItemPage /></PrivateRoute>} />
       <Route path="/items/:id" element={<PrivateRoute><ItemDetailPage /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+      <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboardPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

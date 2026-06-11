@@ -142,7 +142,7 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
 
   const handleSendMessage = (e) => {
     e.preventDefault()
-    if (sendDisabled) return
+    if (buttonDisabled) return
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
@@ -219,18 +219,33 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
   const iBlocked = conversation.blockedBy && conversation.blockedBy.includes(currentUserId)
   const isMuted = conversation.mutedBy && conversation.mutedBy.includes(currentUserId)
   const isArchived = conversation.archivedBy && conversation.archivedBy.includes(currentUserId)
+  
+  // Calculate finder messages for pending state limit
+  const finderMessageCount = messages.filter(m => m.sender?._id === currentUserId).length
+  const finderReachedLimit = !isReporter && isPending && finderMessageCount >= 3
 
-  const sendDisabled = !newMessage.trim() || !socket || isPending || isCanceled || isBlocked
+  const inputDisabled = !socket || (isReporter && isPending) || finderReachedLimit || isCanceled || isBlocked
+  const buttonDisabled = inputDisabled || !newMessage.trim()
 
   let statusMessage = null
+  let inputPlaceholder = 'Type your message here…'
+
   if (isBlocked) {
     statusMessage = "This conversation is blocked."
+    inputPlaceholder = statusMessage
   } else if (isCanceled) {
     statusMessage = "This chat request was canceled."
+    inputPlaceholder = statusMessage
   } else if (isPending) {
-    statusMessage = isReporter 
-      ? "Accept this chat request to reply." 
-      : "Waiting for the reporter to accept your chat."
+    if (isReporter) {
+      statusMessage = "Accept this chat request to reply."
+      inputPlaceholder = statusMessage
+    } else {
+      statusMessage = `You can send up to 3 messages before the reporter accepts your chat request. (${finderMessageCount}/3 sent)`
+      if (finderReachedLimit) {
+        inputPlaceholder = "Message limit reached. Waiting for reporter to accept."
+      }
+    }
   }
 
   return (
@@ -282,6 +297,12 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
       </div>
 
       {error && <div className="alert alert-error chat-alert">{error}</div>}
+
+      {statusMessage && (
+        <div style={{ backgroundColor: '#f3f4f6', color: '#4b5563', padding: '12px 16px', fontSize: '14px', textAlign: 'center', borderBottom: '1px solid #e5e7eb' }}>
+          {statusMessage}
+        </div>
+      )}
 
       <div className="chat-messages-box">
         {isReporter && isPending && !isBlocked && (
@@ -347,11 +368,11 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
           type="text"
           value={newMessage}
           onChange={handleMessageChange}
-          placeholder={statusMessage || 'Type your message here…'}
+          placeholder={inputPlaceholder}
           maxLength={500}
-          disabled={sendDisabled}
+          disabled={inputDisabled}
         />
-        <button type="submit" disabled={sendDisabled}>
+        <button type="submit" disabled={buttonDisabled}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
             <line x1="22" y1="2" x2="11" y2="13" />
             <polygon points="22 2 15 22 11 13 2 9 22 2" />

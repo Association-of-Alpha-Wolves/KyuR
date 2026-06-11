@@ -1,39 +1,37 @@
 import './profile.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import DashboardOverview from './DashboardOverview'
 import ReportedItemsList from './ReportedItemsList'
 import ProfileSettings from './ProfileSettings'
+import { apiRequest } from '../services/api'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('dashboard')
-  
-  const [currentUser, setCurrentUser] = useState({
-    name: 'Juan Dela Cruz',
-    email: 'jdelacruz@iskolarngbayan.pup.edu.ph',
-    role: 'student'
-  })
-  
-  const [userItems] = useState([
-    {
-      _id: 'item12345678',
-      title: 'Blue Backpack',
-      status: 'lost',
-      createdAt: '2026-06-10T12:00:00.000Z',
-      locationId: 'Main Library',
-      imageUrl: ''
-    },
-    {
-      _id: 'item87654321',
-      title: 'IPhone 13 Pro',
-      status: 'found',
-      createdAt: '2026-06-09T08:30:00.000Z',
-      locationId: 'Cafeteria',
-      imageUrl: ''
+  const [currentUser, setCurrentUser] = useState(null)
+  const [userItems, setUserItems] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const profileRes = await apiRequest('/api/auth/profile')
+        const user = profileRes.data
+        setCurrentUser(user)
+
+        const itemsRes = await apiRequest(`/api/items/getItems?reportedBy=${user._id}&limit=100`)
+        setUserItems(itemsRes.data.items)
+      } catch (err) {
+        setError(err.message || 'Failed to load profile.')
+      } finally {
+        setLoading(false)
+      }
     }
-  ])
+    fetchProfileData()
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('kyurToken')
@@ -45,6 +43,22 @@ export default function ProfilePage() {
       ...prev,
       name: updatedUser.name
     }))
+  }
+
+  if (loading) {
+    return (
+      <div className="dashboard-shell-container" style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#6b7280' }}>Loading profile...</p>
+      </div>
+    )
+  }
+
+  if (error || !currentUser) {
+    return (
+      <div className="dashboard-shell-container" style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#dc2626' }}>{error || 'Unable to load profile.'}</p>
+      </div>
+    )
   }
 
   return (

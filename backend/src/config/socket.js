@@ -100,6 +100,19 @@ export const initializeSocket = (httpServer) => {
           await conversation.save();
         }
 
+        // Enforce 3 message limit for finders in pending state
+        if (conversation.status === 'pending' && conversation.finder.toString() === socket.data.userId) {
+          const messageCount = await Message.countDocuments({
+            conversation: conversationId,
+            sender: socket.data.userId
+          });
+          
+          if (messageCount >= 3) {
+            socket.emit('error', { message: 'You can only send up to 3 messages before the reporter accepts your chat request.' });
+            return;
+          }
+        }
+
         const newMessage = await Message.create({
           conversation: conversationId,
           item: itemId,

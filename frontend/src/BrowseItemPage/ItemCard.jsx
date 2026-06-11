@@ -1,7 +1,23 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Badge from './Badge'
+import { generatePoster, generateQRCodeOnly } from '../utils/posterUtils'
+
+function getStoredToken() {
+  return localStorage.getItem('kyurToken')
+}
 
 export default function ItemCard({ item }) {
+  const navigate = useNavigate()
+  const isLoggedIn = !!getStoredToken()
+
+  const handleAction = (e, actionFn) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    actionFn(item);
+  };
   const formatDate = (value) => {
     if (!value) return 'Date unavailable'
     return new Intl.DateTimeFormat('en', {
@@ -117,23 +133,83 @@ export default function ItemCard({ item }) {
           </div>
         </dl>
         
-        <Link className="details-link" to={`/items/${item._id}`}>
-          View Details
-          {/* Lucide ChevronRight Icon */}
-          <svg
-            className="lucide-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            width="16"
-            height="16"
+        <div className="card-actions" style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+          <Link className="details-link" to={isLoggedIn ? `/items/${item._id}` : '/login'} style={{ flex: 1, justifyContent: 'center' }}>
+            View Details
+            {/* Lucide ChevronRight Icon */}
+            <svg
+              className="lucide-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="16"
+              height="16"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </Link>
+          <button 
+            type="button" 
+            className="details-link"
+            style={{ 
+              backgroundColor: '#f1f5f9', 
+              color: '#334155', 
+              border: '1px solid #e2e8f0', 
+              cursor: 'pointer' 
+            }}
+            onClick={(e) => handleAction(e, generatePoster)}
+            title="Download Poster"
           >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </Link>
+            <svg
+              className="lucide-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="16"
+              height="16"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" x2="12" y1="15" y2="3" />
+            </svg>
+          </button>
+          <button 
+            type="button" 
+            className="details-link"
+            style={{ 
+              backgroundColor: '#f1f5f9', 
+              color: '#334155', 
+              border: '1px solid #e2e8f0', 
+              cursor: 'pointer' 
+            }}
+            onClick={(e) => handleAction(e, generateQRCodeOnly)}
+            title="Download QR Only"
+          >
+            <svg
+              className="lucide-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="16"
+              height="16"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <rect x="7" y="7" width="3" height="3" />
+              <rect x="14" y="7" width="3" height="3" />
+              <rect x="7" y="14" width="3" height="3" />
+              <rect x="14" y="14" width="3" height="3" />
+            </svg>
+          </button>
+        </div>
       </div>
     </article>
   )

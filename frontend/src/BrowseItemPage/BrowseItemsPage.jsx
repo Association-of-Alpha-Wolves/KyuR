@@ -40,6 +40,7 @@ export default function BrowseItemsPage() {
   const [locationDraft, setLocationDraft] = useState(searchParams.get('locationId') || '')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const isLoggedIn = !!getStoredToken()
 
   const filters = useMemo(
     () => ({
@@ -142,7 +143,7 @@ export default function BrowseItemsPage() {
         
         <nav className="navLinks" style={{ justifyContent: "flex-start", marginRight: "auto" }}>
           <Link to="/items">Hall of Lost and Found</Link>
-          <Link to="/profile">Management</Link>
+          {isLoggedIn && <Link to="/profile">Management</Link>}
           <Link to="/about">About</Link>
         </nav>
 
@@ -160,18 +161,32 @@ export default function BrowseItemsPage() {
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link className="reportBtn" to="/items/report">
-            Report Lost Item
-          </Link>
-          <NavChatDropdown />
-          <button 
-            onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} 
-            className="btn-secondary" 
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px' }}
-            title="Logout"
-          >
-            <LogOut size={20} />
-          </button>
+          {isLoggedIn ? (
+            <>
+              <Link className="reportBtn" to="/items/report">
+                Report Lost Item
+              </Link>
+              <NavChatDropdown />
+              <button 
+                onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} 
+                className="btn-secondary" 
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px' }}
+                title="Logout"
+              >
+                <LogOut size={20} />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link className="reportBtn" to="/login">
+                Report Lost Item
+              </Link>
+              <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-main)', textDecoration: 'none', fontWeight: 500 }}>
+                <User size={18} />
+                <span>Login</span>
+              </Link>
+            </>
+          )}
         </div>
       </header>
 

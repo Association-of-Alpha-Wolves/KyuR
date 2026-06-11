@@ -41,3 +41,18 @@ export const protect = asyncHandler(async (req, _res, next) => {
   req.user = user;
   next();
 });
+
+/**
+ * admin
+ * Verifies that the authenticated user has the 'admin' role.
+ * Must be used AFTER the protect middleware.
+ */
+export const admin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    const error = new Error('Not authorized as an admin');
+    error.statusCode = 403;
+    throw error;
+  }
+};
