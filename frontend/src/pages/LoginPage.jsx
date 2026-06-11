@@ -22,7 +22,7 @@ export default function LoginPage() {
         body: JSON.stringify(form),
       });
 
-      if (data.token) localStorage.setItem("kyurToken", data.token);
+      if (data.data?.token) localStorage.setItem("kyurToken", data.data.token);
       navigate("/items");
     } catch (err) {
       setError(err.message);

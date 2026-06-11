@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Brand from "../components/Brand";
 import { apiRequest } from "../services/api";
 
-const PUP_DOMAIN = "@iskolarnbayan.pup.edu.ph";
+const PUP_DOMAIN = "@iskolarngbayan.pup.edu.ph";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ fullName: "", email: "", password: "", confirmPassword: "" });
@@ -35,7 +35,7 @@ export default function RegisterPage() {
       await apiRequest("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({
-          fullName: form.fullName,
+          name: form.fullName,
           email: form.email,
           password: form.password,
         }),
