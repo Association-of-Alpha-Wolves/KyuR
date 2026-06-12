@@ -17,7 +17,8 @@ export function SocketProvider({ children }) {
     if (!token) return;
 
     const newSocket = io(SOCKET_URL, {
-      auth: { token }
+      auth: { token },
+      transports: ['websocket', 'polling'],
     });
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
