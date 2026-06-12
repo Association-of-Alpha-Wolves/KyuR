@@ -95,7 +95,7 @@ export default function BrowseItemsPage() {
 
         const response = await axios.get(`${API_BASE_URL}/items/getItems`, {
           params,
-          headers: { Authorization: `Bearer ${token}` }
+          ...(token && { headers: { Authorization: `Bearer ${token}` } }),
         })
 
         setItems(response.data.data.items);

@@ -11,13 +11,10 @@ import upload from '../middlewares/uploadMiddleware.js';
 
 const router = Router();
 
-// All item routes require authentication
-router.use(protect);
-
-router.post('/createItem', upload.single('image'), createItem);
 router.get('/getItems', getItems);
-router.get('/:id', getItemById);
-router.put('/:id/status', updateItemStatus);
-router.delete('/:id', deleteItem);
+router.post('/createItem', protect, upload.single('image'), createItem);
+router.get('/:id', protect, getItemById);
+router.put('/:id/status', protect, updateItemStatus);
+router.delete('/:id', protect, deleteItem);
 
 export default router;
