@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Brand from "../components/Brand";
 import AnimatedBg from "../components/AnimatedBg";
 import { apiRequest } from "../services/api";
@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ fullName: "", email: "", password: "", confirmPassword: "" });
   const [status, setStatus] = useState({ error: "", success: "" });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,7 +34,7 @@ export default function RegisterPage() {
     setStatus({ error: "", success: "" });
 
     try {
-      await apiRequest("/api/auth/register", {
+      const res = await apiRequest("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({
           name: form.fullName,
@@ -42,7 +43,8 @@ export default function RegisterPage() {
         }),
       });
 
-      setStatus({ error: "", success: "Account created! You can now log in." });
+      localStorage.setItem("kyurToken", res.data.token);
+      navigate("/items");
     } catch (err) {
       setStatus({ error: err.message, success: "" });
     } finally {
