@@ -24,7 +24,11 @@ export function SocketProvider({ children }) {
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
-      console.log('Global socket connected:', newSocket.id);
+      console.log('Socket connected:', newSocket.id);
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
     });
 
     return () => {

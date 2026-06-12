@@ -180,6 +180,11 @@ export const updateConversationStatus = asyncHandler(async (req, res) => {
   conversation.status = status;
   await conversation.save();
 
+  await conversation.populate([
+    { path: 'reporter', select: 'name _id' },
+    { path: 'finder', select: 'name _id' },
+  ]);
+
   res.status(200).json({
     success: true,
     data: conversation,

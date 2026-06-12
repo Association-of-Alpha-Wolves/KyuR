@@ -29,8 +29,8 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
     async function loadChat() {
       try {
         let convIdToLoad = activeConvId;
-        
-        // If finder and no convId, initiate or get existing
+
+        // If finder and no convId, initiate or get existing conversation
         if (!isReporter && !convIdToLoad) {
           const initRes = await axios.post(`${API_BASE_URL}/messages/conversations`, { itemId }, {
             headers: { Authorization: `Bearer ${token}` }
@@ -39,7 +39,6 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
           setActiveConvId(convIdToLoad)
           setConversation(initRes.data.data)
         } else if (convIdToLoad) {
-          // Fetch user conversations to find this one and update state
           const convsRes = await axios.get(`${API_BASE_URL}/messages/conversations`, {
             headers: { Authorization: `Bearer ${token}` }
           })
@@ -49,29 +48,23 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
 
         if (!convIdToLoad) return
 
-        // Load messages
         const msgRes = await axios.get(`${API_BASE_URL}/messages/conversations/${convIdToLoad}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         const loaded = msgRes.data.data.messages || []
         setMessages(loaded)
-
-        // Mark incoming messages as read
-        loaded.forEach((msg) => {
-          if (msg.receiver?._id === currentUserId && !msg.isRead) {
-            socket?.emit('mark_read', { messageId: msg._id, conversationId: convIdToLoad })
-          }
-        })
       } catch (err) {
         console.error('Failed to load chat:', err)
-        setError('Failed to load chat history.')
+        setError('Failed to load chat.')
       }
     }
 
     loadChat()
-  }, [itemId, isReporter, currentUserId, socket, activeConvId])
+    // socket intentionally omitted — mark-reads are handled in the socket effect below
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemId, isReporter, currentUserId, activeConvId])
 
-  // Socket Events
+  // Socket Events — join room, attach listeners, and mark loaded messages as read
   useEffect(() => {
     if (!socket || !activeConvId) return
 
@@ -134,6 +127,16 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
       socket.off('error', handleSocketError)
     }
   }, [socket, activeConvId, currentUserId])
+
+  // Mark already-loaded unread messages as read whenever messages or socket change
+  useEffect(() => {
+    if (!socket || !activeConvId || messages.length === 0) return
+    messages.forEach((msg) => {
+      if (msg.receiver?._id === currentUserId && !msg.isRead) {
+        socket.emit('mark_read', { messageId: msg._id, conversationId: activeConvId })
+      }
+    })
+  }, [messages, socket, currentUserId, activeConvId])
 
   useEffect(() => {
     scrollToBottom()
@@ -211,8 +214,11 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
 
   if (!activeConvId || !conversation) {
     return (
-      <div className="chat-panel-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p>Loading chat...</p>
+      <div className="chat-panel-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '12px' }}>
+        {error
+          ? <div className="alert alert-error chat-alert">{error}</div>
+          : <p>Loading chat...</p>
+        }
       </div>
     )
   }
