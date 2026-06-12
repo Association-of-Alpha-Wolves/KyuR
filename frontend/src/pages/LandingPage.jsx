@@ -88,7 +88,6 @@ export default function LandingPage() {
             </p>
             <div className="heroButtons">
               <Link to="/register" className="bigBlueBtn">Get started</Link>
-              <Link to="/items" className="bigWhiteBtn">Hall of Lost and Founds</Link>
               <a href="#about" className="bigWhiteBtn">Learn more</a>
             </div>
           </div>
