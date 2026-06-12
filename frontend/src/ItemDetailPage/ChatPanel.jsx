@@ -75,7 +75,17 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
   useEffect(() => {
     if (!socket || !activeConvId) return
 
-    socket.emit('join_room', { conversationId: activeConvId })
+    const joinCurrentRoom = () => {
+      socket.emit('join_room', { conversationId: activeConvId })
+    }
+
+    if (socket.connected) {
+      joinCurrentRoom()
+    }
+
+    const handleConnect = () => {
+      joinCurrentRoom()
+    }
 
     const handleReceiveMessage = (message) => {
       console.log('Received message:', message)
@@ -108,6 +118,7 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
       setError(message)
     }
 
+    socket.on('connect', handleConnect)
     socket.on('receive_message', handleReceiveMessage)
     socket.on('typing', handleTyping)
     socket.on('stop_typing', handleStopTyping)
@@ -115,6 +126,7 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
     socket.on('error', handleSocketError)
 
     return () => {
+      socket.off('connect', handleConnect)
       socket.off('receive_message', handleReceiveMessage)
       socket.off('typing', handleTyping)
       socket.off('stop_typing', handleStopTyping)

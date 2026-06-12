@@ -274,6 +274,7 @@ export default function ItemDetailPage() {
                 </div>
               ) : (
                 <ChatPanel
+                  key={activeConversationId || 'new'}
                   itemId={id}
                   conversationId={activeConversationId}
                   currentUserId={currentUser._id}
