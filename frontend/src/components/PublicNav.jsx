@@ -8,8 +8,7 @@ export default function PublicNav({ showScrollProgress = false }) {
   const navigate = useNavigate();
   const location = useLocation();
   const showChatBubble = location.pathname.startsWith("/items") || location.pathname.startsWith("/profile");
-  // TEMPORARY: Bypass auth for frontend-only development
-  const isLoggedIn = true; // !!localStorage.getItem("kyurToken");
+  const isLoggedIn = !!localStorage.getItem("kyurToken");
   const handleLogout = () => {
     localStorage.removeItem("kyurToken");
     navigate("/login");
@@ -47,9 +46,14 @@ export default function PublicNav({ showScrollProgress = false }) {
           </button>
         </div>
       ) : (
-        <Link to="/login" className="reportBtn">
-          Report Lost Item
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link to="/login" className="reportBtn">
+            Report Lost Item
+          </Link>
+          <Link to="/login" className="btn-secondary" style={{ padding: '8px 16px', borderRadius: '8px', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 'bold' }}>
+            Log In
+          </Link>
+        </div>
       )}
 
       {showScrollProgress && <ScrollProgress />}
