@@ -78,6 +78,7 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
     socket.emit('join_room', { conversationId: activeConvId })
 
     const handleReceiveMessage = (message) => {
+      console.log('Received message:', message)
       setMessages((prev) => {
         if (prev.some((m) => m._id === message._id)) return prev
         return [...prev, message]
@@ -153,6 +154,15 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
     const receiverId = isReporter 
       ? conversation?.finder?._id || conversation?.finder 
       : reporterId
+
+    console.log('Sending message:', {
+      conversationId: activeConvId,
+      itemId,
+      receiverId,
+      content: newMessage.trim(),
+      isReporter,
+      reporterId
+    })
 
     socket.emit('send_message', {
       conversationId: activeConvId,

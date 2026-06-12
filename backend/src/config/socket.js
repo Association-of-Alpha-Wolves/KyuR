@@ -73,9 +73,10 @@ export const initializeSocket = (httpServer) => {
     });
 
     // ── send_message ───────────────────────────────────────────────────────────
-    // Client emits: { conversationId: string, itemId: string, receiverId: string, content: string }
     socket.on('send_message', async ({ conversationId, itemId, receiverId, content }) => {
+      console.log('--- send_message payload ---', { conversationId, itemId, receiverId, content });
       if (!conversationId || !itemId || !receiverId || !content?.trim()) {
+        console.error('send_message validation failed:', { conversationId, itemId, receiverId, content });
         socket.emit('error', { message: 'conversationId, itemId, receiverId, and content are required' });
         return;
       }

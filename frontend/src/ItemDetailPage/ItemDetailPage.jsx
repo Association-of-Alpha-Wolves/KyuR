@@ -136,7 +136,8 @@ export default function ItemDetailPage() {
     }
   }
 
-  const isReporter = currentUser && item && item.reportedBy?._id === currentUser._id
+  const reporterIdStr = item?.reportedBy?._id || item?.reportedBy
+  const isReporter = currentUser && item && reporterIdStr === currentUser._id
 
   if (isLoading) {
     return (
@@ -276,7 +277,7 @@ export default function ItemDetailPage() {
                   itemId={id}
                   conversationId={activeConversationId}
                   currentUserId={currentUser._id}
-                  reporterId={item.reportedBy?._id}
+                  reporterId={item.reportedBy?._id || item.reportedBy}
                   socket={socket}
                 />
               )}
