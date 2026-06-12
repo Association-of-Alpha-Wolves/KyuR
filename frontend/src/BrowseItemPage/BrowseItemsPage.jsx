@@ -7,7 +7,7 @@ import Pagination from './Pagination'
 import SkeletonGrid from './SkeletonGrid'
 import EmptyState from './EmptyState'
 import Brand from '../components/Brand'
-import { Search, User, LogOut } from 'lucide-react'
+import { Search, User, LogOut, Menu, X, SlidersHorizontal } from 'lucide-react'
 import NavChatDropdown from '../components/NavChatDropdown'
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api'
 const PAGE_SIZE = 9
@@ -40,6 +40,8 @@ export default function BrowseItemsPage() {
   const [locationDraft, setLocationDraft] = useState(searchParams.get('locationId') || '')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const isLoggedIn = !!getStoredToken()
 
   const filters = useMemo(
@@ -134,13 +136,14 @@ export default function BrowseItemsPage() {
   ].filter(Boolean).length
 
   return (
+    <>
     <main className="app-shell">
       {/* Dynamic Header */}
       <header className="kyurNav" style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-        <Link to="/" className="brandLink" style={{ flexShrink: 0, marginRight: 8 }}>
+        <Link to="/" className="brandLink" style={{ flexShrink: 0, marginRight: 8 }} onClick={() => setMobileNavOpen(false)}>
           <Brand />
         </Link>
-        
+
         <nav className="navLinks" style={{ justifyContent: "flex-start", marginRight: "auto" }}>
           <Link to="/items">Hall of Lost and Found</Link>
           {isLoggedIn && <Link to="/profile">Management</Link>}
@@ -160,17 +163,14 @@ export default function BrowseItemsPage() {
           />
         </form>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="navActions">
           {isLoggedIn ? (
             <>
-              <Link className="reportBtn" to="/items/report">
-                Report Lost Item
-              </Link>
+              <Link className="reportBtn" to="/items/report">Report Lost Item</Link>
               <NavChatDropdown />
-              <button 
-                onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} 
-                className="btn-secondary" 
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px' }}
+              <button
+                onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }}
+                className="btn-secondary navIconBtn"
                 title="Logout"
               >
                 <LogOut size={20} />
@@ -178,33 +178,97 @@ export default function BrowseItemsPage() {
             </>
           ) : (
             <>
-              <Link className="reportBtn" to="/login">
-                Report Lost Item
-              </Link>
-              <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-main)', textDecoration: 'none', fontWeight: 500 }}>
-                <User size={18} />
-                <span>Login</span>
+              <Link className="reportBtn" to="/login">Report Lost Item</Link>
+              <Link to="/login" className="btn-secondary navTextBtn">
+                <User size={18} style={{ marginRight: 4 }} /> Login
               </Link>
             </>
           )}
         </div>
+
+        <button
+          className="nav-hamburger"
+          onClick={() => setMobileNavOpen(!mobileNavOpen)}
+          aria-label="Toggle menu"
+          aria-expanded={mobileNavOpen}
+        >
+          {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </header>
+
+      {mobileNavOpen && (
+        <div className="mobile-nav-overlay" onClick={() => setMobileNavOpen(false)}>
+          <nav className="mobile-nav-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-nav-links">
+              <Link to="/items" onClick={() => setMobileNavOpen(false)}>Hall of Lost and Found</Link>
+              {isLoggedIn && <Link to="/profile" onClick={() => setMobileNavOpen(false)}>Management</Link>}
+              <Link to="/about" onClick={() => setMobileNavOpen(false)}>About</Link>
+            </div>
+            <hr className="mobile-nav-divider" />
+            <div className="mobile-nav-actions">
+              {isLoggedIn ? (
+                <>
+                  <Link className="reportBtn mobile-full-btn" to="/items/report" onClick={() => setMobileNavOpen(false)}>
+                    Report Lost Item
+                  </Link>
+                  <button
+                    onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }}
+                    className="btn-secondary mobile-full-btn"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
+                    <LogOut size={18} /> Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link className="reportBtn mobile-full-btn" to="/login" onClick={() => setMobileNavOpen(false)}>
+                    Report Lost Item
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="btn-secondary mobile-full-btn"
+                    style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    onClick={() => setMobileNavOpen(false)}
+                  >
+                    <User size={18} /> Login
+                  </Link>
+                </>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
 
       <div className="custom-scroll-container">
         {/* Main Browse Hero */}
         <section className="feed-header">
-        <div>
-          <p className="eyebrow">Campus item recovery</p>
-          <h1>Search for an item</h1>
-          <p className="page-copy">
-            Browse reported lost and found belongings across PUP locations.
-          </p>
+          <div>
+            <p className="eyebrow">Campus item recovery</p>
+            <h1>Search for an item</h1>
+            <p className="page-copy">
+              Browse reported lost and found belongings across PUP locations.
+            </p>
+          </div>
+        </section>
+
+        {/* Mobile filter toggle bar */}
+        <div className="mobile-filter-bar">
+          <button
+            type="button"
+            className={`mobile-filter-toggle ${activeFilterCount > 0 ? 'has-filters' : ''}`}
+            onClick={() => setFiltersOpen(!filtersOpen)}
+          >
+            <SlidersHorizontal size={16} />
+            Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+          </button>
+          <span className="mobile-results-count">
+            {isLoading ? 'Loading…' : `${meta.total} item${meta.total === 1 ? '' : 's'}`}
+          </span>
         </div>
-      </section>
 
       {/* Layout Content */}
       <section className="browse-layout" aria-label="Browse reported items">
-        <aside className="filters-panel">
+        <aside className={`filters-panel ${filtersOpen ? 'mobile-open' : ''}`}>
           <div className="panel-title">
             {/* Lucide Filter Icon */}
             <svg
@@ -319,6 +383,14 @@ export default function BrowseItemsPage() {
               Clear filters
             </button>
           )}
+
+          <button
+            type="button"
+            className="mobile-filter-close"
+            onClick={() => setFiltersOpen(false)}
+          >
+            Apply &amp; Close
+          </button>
         </aside>
 
         <section className="results-panel">
@@ -358,5 +430,6 @@ export default function BrowseItemsPage() {
       </section>
       </div>
     </main>
+    </>
   )
 }
