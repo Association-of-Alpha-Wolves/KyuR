@@ -1,0 +1,62 @@
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { LogOut, User } from "lucide-react";
+import Brand from "./Brand.jsx";
+import ScrollProgress from "./ScrollProgress.jsx";
+import NavChatDropdown from "./NavChatDropdown.jsx";
+
+export default function PublicNav({ showScrollProgress = false }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const showChatBubble = location.pathname.startsWith("/items") || location.pathname.startsWith("/profile");
+  const isLoggedIn = !!localStorage.getItem("kyurToken");
+  const handleLogout = () => {
+    localStorage.removeItem("kyurToken");
+    navigate("/login");
+  };
+
+  return (
+    <header className="kyurNav" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <Link to="/" className="brandLink" style={{ flexShrink: 0, marginRight: 8 }}>
+        <Brand />
+      </Link>
+
+      <nav className="navLinks" style={{ justifyContent: "flex-start", marginRight: "auto" }}>
+        <a href="#home">Home</a>
+        <a href="#why-choose-kyur">How It Works</a>
+        <a href="#about">About</a>
+        <Link to="/items">Hall of Lost and Founds</Link>
+      </nav>
+
+      {isLoggedIn ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link to="/items/report" className="reportBtn">
+            Report Lost Item
+          </Link>
+          
+          {showChatBubble ? (
+            <NavChatDropdown />
+          ) : (
+            <Link to="/profile" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px', color: 'var(--text-main)', textDecoration: 'none' }} title="Profile">
+              <User size={20} />
+            </Link>
+          )}
+
+          <button onClick={handleLogout} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px' }} title="Logout">
+            <LogOut size={20} />
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link to="/login" className="reportBtn">
+            Report Lost Item
+          </Link>
+          <Link to="/login" className="btn-secondary" style={{ padding: '8px 16px', borderRadius: '8px', textDecoration: 'none', color: 'var(--text-main)', fontWeight: 'bold' }}>
+            Log In
+          </Link>
+        </div>
+      )}
+
+      {showScrollProgress && <ScrollProgress />}
+    </header>
+  );
+}

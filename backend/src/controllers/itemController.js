@@ -1,9 +1,29 @@
 import crypto from 'node:crypto';
 import mongoose from 'mongoose';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import s3 from '../config/s3.js';
 import Item from '../models/Item.js';
 import asyncHandler from '../utils/asyncHandler.js';
+
+const signImageUrl = async (url) => {
+  if (!url) return null;
+  const match = url.match(/\.amazonaws\.com\/(.+)$/);
+  if (match && match[1]) {
+    try {
+      const key = decodeURIComponent(match[1]);
+      const command = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME.trim(),
+        Key: key,
+      });
+      return await getSignedUrl(s3, command, { expiresIn: 3600 });
+    } catch (err) {
+      console.error('Error signing URL:', err);
+      return url;
+    }
+  }
+  return url;
+};
 
 /**
  * Uploads a file buffer to S3 and returns the public object URL.
@@ -54,9 +74,14 @@ export const createItem = asyncHandler(async (req, res) => {
     reportedBy: req.user._id,
   });
 
+  const itemObj = item.toObject();
+  if (itemObj.imageUrl) {
+    itemObj.imageUrl = await signImageUrl(itemObj.imageUrl);
+  }
+
   res.status(201).json({
     success: true,
-    data: item,
+    data: itemObj,
   });
 });
 
@@ -68,7 +93,7 @@ export const createItem = asyncHandler(async (req, res) => {
  * @query   page (default 1), limit (default 10) — pagination
  */
 export const getItems = asyncHandler(async (req, res) => {
-  const { status, category, locationId, search } = req.query;
+  const { status, category, locationId, search, reportedBy } = req.query;
 
   // Pagination params — coerce to integers and guard against bad input
   const page  = Math.max(1, parseInt(req.query.page,  10) || 1);
@@ -80,6 +105,9 @@ export const getItems = asyncHandler(async (req, res) => {
   if (status)     query.status     = status;
   if (category)   query.category   = category;
   if (locationId) query.locationId = locationId;
+  if (reportedBy && mongoose.Types.ObjectId.isValid(reportedBy)) {
+    query.reportedBy = reportedBy;
+  }
 
   // Full-text search uses the { title: 'text', description: 'text' } index.
   // Cannot be combined with a regex filter on the same fields — keep them separate.
@@ -95,10 +123,18 @@ export const getItems = asyncHandler(async (req, res) => {
       .limit(limit),
   ]);
 
+  const itemsWithSignedUrls = await Promise.all(items.map(async (item) => {
+    const itemObj = item.toObject();
+    if (itemObj.imageUrl) {
+      itemObj.imageUrl = await signImageUrl(itemObj.imageUrl);
+    }
+    return itemObj;
+  }));
+
   res.status(200).json({
     success: true,
     data: {
-      items,
+      items: itemsWithSignedUrls,
       page,
       pages: Math.ceil(total / limit),
       total,
@@ -127,9 +163,14 @@ export const getItemById = asyncHandler(async (req, res) => {
     throw error;
   }
 
+  const itemObj = item.toObject();
+  if (itemObj.imageUrl) {
+    itemObj.imageUrl = await signImageUrl(itemObj.imageUrl);
+  }
+
   res.status(200).json({
     success: true,
-    data: item,
+    data: itemObj,
   });
 });
 
@@ -177,9 +218,14 @@ export const updateItemStatus = asyncHandler(async (req, res) => {
 
   const updatedItem = await item.save();
 
+  const itemObj = updatedItem.toObject();
+  if (itemObj.imageUrl) {
+    itemObj.imageUrl = await signImageUrl(itemObj.imageUrl);
+  }
+
   res.status(200).json({
     success: true,
-    data: updatedItem,
+    data: itemObj,
   });
 });
 

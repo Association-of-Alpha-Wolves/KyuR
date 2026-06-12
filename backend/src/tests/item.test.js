@@ -154,8 +154,10 @@ describe('GET /api/items/getItems', () => {
     expect(res.body.data.pages).toBe(2);
   });
 
-  it('returns 401 when no token is provided', async () => {
+  it('returns 200 without a token (public route)', async () => {
     const res = await request(app).get('/api/items/getItems');
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.items).toHaveLength(2);
   });
 });
