@@ -19,7 +19,6 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
-import AboutPage from "./pages/AboutPage.jsx";
 import BrowseItemsPage from "./BrowseItemPage/BrowseItemsPage.jsx";
 import ReportItemPage from "./ReportItemPage/ReportItemPage.jsx";
 import ItemDetailPage from "./ItemDetailPage/ItemDetailPage.jsx";

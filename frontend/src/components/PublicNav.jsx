@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { LogOut, MessageCircle, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Brand from "./Brand.jsx";
 import ScrollProgress from "./ScrollProgress.jsx";
 import NavChatDropdown from "./NavChatDropdown.jsx";
@@ -38,9 +37,8 @@ export default function PublicNav({ showScrollProgress = false }) {
           {showChatBubble ? (
             <NavChatDropdown />
           ) : (
-            <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-main)', textDecoration: 'none', fontWeight: 500 }}>
-              <User size={18} />
-              <span>Profile</span>
+            <Link to="/profile" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px', color: 'var(--text-main)', textDecoration: 'none' }} title="Profile">
+              <User size={20} />
             </Link>
           )}
 

@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import {
-  BadgeCheck,
   BriefcaseBusiness,
   Clock,
   Globe2,

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Archive } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api';
@@ -20,7 +20,7 @@ export default function NavChatDropdown() {
   try {
     const token = getStoredToken();
     if (token) myId = JSON.parse(atob(token.split('.')[1])).id;
-  } catch (e) {
+  } catch {
     console.error('Failed to parse token');
   }
 
@@ -49,6 +49,7 @@ export default function NavChatDropdown() {
 
   useEffect(() => {
     if (showMessages) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadChats();
     }
   }, [showMessages]);

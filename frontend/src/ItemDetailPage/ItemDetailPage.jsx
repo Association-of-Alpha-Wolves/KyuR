@@ -44,7 +44,9 @@ export default function ItemDetailPage() {
   useEffect(() => {
     const token = getStoredToken()
     if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError('Authentication required. Please log in.')
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(false)
       return
     }
