@@ -165,7 +165,6 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
       socket.emit('stop_typing', { conversationId: activeConvId })
     }
 
-    console.log('[ChatPanel] emitting send_message', { conversationId: activeConvId, itemId, socketConnected: socket?.connected })
     socket.emit('send_message', {
       conversationId: activeConvId,
       itemId,
