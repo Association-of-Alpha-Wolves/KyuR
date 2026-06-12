@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react'
+import Cropper from 'react-easy-crop'
+import { getCroppedImg } from '../utils/cropImage'
 
 export default function PostDetailsStep({ formData, setFormData, onNext, onCancel }) {
   const [titleCharCount, setTitleCharCount] = useState(formData.title.length)
@@ -6,6 +8,12 @@ export default function PostDetailsStep({ formData, setFormData, onNext, onCance
   const [imagePreview, setImagePreview] = useState(formData.imagePreviewUrl || null)
   const [error, setError] = useState('')
   const fileInputRef = useRef(null)
+
+  const [originalImageSrc, setOriginalImageSrc] = useState(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const [isCropping, setIsCropping] = useState(false)
 
   const handleTitleChange = (e) => {
     const val = e.target.value
@@ -44,14 +52,37 @@ export default function PostDetailsStep({ formData, setFormData, onNext, onCance
 
     const reader = new FileReader()
     reader.onloadend = () => {
-      setImagePreview(reader.result)
-      setFormData(prev => ({
-        ...prev,
-        image: file,
-        imagePreviewUrl: reader.result
-      }))
+      setOriginalImageSrc(reader.result)
+      setIsCropping(true)
     }
     reader.readAsDataURL(file)
+  }
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }
+
+  const handleApplyCrop = async () => {
+    try {
+      const croppedBlob = await getCroppedImg(originalImageSrc, croppedAreaPixels)
+      const croppedImageUrl = URL.createObjectURL(croppedBlob)
+      
+      setImagePreview(croppedImageUrl)
+      setFormData(prev => ({
+        ...prev,
+        image: croppedBlob,
+        imagePreviewUrl: croppedImageUrl
+      }))
+      setIsCropping(false)
+    } catch (e) {
+      console.error(e)
+      setError('Failed to crop image')
+    }
+  }
+
+  const handleCancelCrop = () => {
+    setIsCropping(false)
+    setOriginalImageSrc(null)
   }
 
   const handleFileChange = (e) => {
@@ -197,6 +228,26 @@ export default function PostDetailsStep({ formData, setFormData, onNext, onCance
           Next Step
         </button>
       </div>
+
+      {isCropping && (
+        <div className="crop-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', flexDirection: 'column' }}>
+          <div className="crop-container" style={{ position: 'relative', flex: 1 }}>
+            <Cropper
+              image={originalImageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={4 / 3}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+            />
+          </div>
+          <div className="crop-controls" style={{ padding: '16px', background: 'white', display: 'flex', justifyContent: 'space-between', zIndex: 1001 }}>
+            <button type="button" className="btn-secondary" onClick={handleCancelCrop}>Cancel</button>
+            <button type="button" className="btn-primary" onClick={handleApplyCrop}>Apply Crop</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
