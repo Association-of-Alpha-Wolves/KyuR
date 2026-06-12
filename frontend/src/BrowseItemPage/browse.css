@@ -488,3 +488,134 @@
   display: flex;
   gap: 4px;
 }
+
+/* ─── MOBILE FILTER BAR ──────────────────────────── */
+
+.mobile-filter-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+
+.mobile-filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.mobile-filter-toggle.has-filters {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: #eff6ff;
+}
+
+.mobile-filter-toggle:hover {
+  background: #eff6ff;
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.mobile-results-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.mobile-filter-close {
+  display: none;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  font-family: inherit;
+  transition: background 160ms ease;
+}
+
+.mobile-filter-close:hover {
+  background: var(--blue-dark);
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .feed-header {
+    padding: 20px 16px 0;
+  }
+
+  .feed-header h1 {
+    font-size: 22px;
+  }
+
+  .mobile-filter-bar {
+    display: flex;
+  }
+
+  .browse-layout {
+    grid-template-columns: 1fr;
+    padding: 14px 16px 40px;
+    gap: 14px;
+  }
+
+  /* Filters panel hidden by default on mobile, shown when toggled */
+  .filters-panel {
+    display: none;
+    position: static;
+    top: auto;
+  }
+
+  .filters-panel.mobile-open {
+    display: flex;
+  }
+
+  .mobile-filter-close {
+    display: block;
+  }
+
+  /* Item grid: 2 columns on mobile */
+  .item-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .item-image {
+    height: 130px;
+  }
+
+  .item-card-body {
+    padding: 10px 12px;
+  }
+
+  .item-card-body h2 {
+    font-size: 13px;
+  }
+
+  .results-toolbar {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .item-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -485,3 +485,65 @@
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .item-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .item-detail-layout-container {
+    padding: 18px 20px 40px;
+  }
+
+  .chat-panel-container {
+    min-height: 420px;
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 760px) {
+  .item-detail-layout-container {
+    padding: 14px 14px 32px;
+  }
+
+  .item-detail-title {
+    font-size: 17px;
+  }
+
+  .item-detail-image-box {
+    min-height: 180px;
+  }
+
+  .item-detail-img {
+    max-height: 280px;
+  }
+
+  .reporter-actions-box {
+    flex-direction: column;
+  }
+
+  .reporter-actions-box .btn-primary,
+  .reporter-actions-box .btn-danger-outline {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn-primary,
+  .modal-footer .btn-secondary,
+  .modal-footer .btn-danger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .chat-panel-container {
+    min-height: 380px;
+    max-height: 480px;
+  }
+}

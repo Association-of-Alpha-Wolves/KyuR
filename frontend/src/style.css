@@ -63,7 +63,7 @@ button:disabled {
   background: #fff;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 300;
 }
 
 .brandLink {
@@ -918,6 +918,131 @@ button:disabled {
   opacity: 0.75;
 }
 
+/* ─── NAV ACTIONS & HAMBURGER ──────────────────── */
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.navIconBtn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  min-width: unset;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.navTextBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-hamburger {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.nav-hamburger:hover {
+  background: #eff6ff;
+  color: var(--blue);
+  border-color: var(--blue);
+}
+
+/* ─── MOBILE NAV MENU ──────────────────────────── */
+
+.mobile-nav-overlay {
+  position: fixed;
+  top: 58px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+}
+
+.mobile-nav-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 12px 32px rgba(7, 84, 184, 0.12);
+  animation: slideDown 160ms ease;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-12px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-nav-links a {
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #374151;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 160ms ease, color 160ms ease;
+  display: block;
+}
+
+.mobile-nav-links a:hover {
+  background: #eff6ff;
+  color: var(--blue);
+}
+
+.mobile-nav-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+.mobile-nav-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-full-btn {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
 /* ─── RESPONSIVE ───────────────────────────────── */
 
 @media (max-width: 1400px) {
@@ -948,11 +1073,6 @@ button:disabled {
     grid-column: 1 / -1;
   }
 
-  .reportBtn {
-    grid-column: 1 / -1;
-    justify-self: start;
-  }
-
   .homeHero,
   .lowerHome,
   .aboutTop,
@@ -966,30 +1086,46 @@ button:disabled {
 }
 
 @media (max-width: 760px) {
+  /* Show hamburger, hide desktop nav items */
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .kyurNav .navLinks,
+  .kyurNav .navSearch,
+  .kyurNav .navActions {
+    display: none;
+  }
+
   .kyurNav {
-    grid-template-columns: 1fr;
-    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    min-height: 58px;
+    gap: 0;
   }
 
-  .navLinks {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
+  /* Landing hero */
   .homeHero {
     padding: 28px 18px 18px;
   }
 
+  .heroCopy {
+    margin-left: 0;
+  }
+
   .heroCopy h1 {
-    font-size: 32px;
+    font-size: clamp(28px, 8vw, 36px);
+    white-space: normal;
   }
 
   .heroCopy h2 {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .heroCopy p {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .bigBlueBtn,
@@ -999,7 +1135,7 @@ button:disabled {
   }
 
   .heroProduct {
-    min-height: 340px;
+    min-height: 260px;
   }
 
   .benefitGrid,
@@ -1045,7 +1181,34 @@ button:disabled {
   }
 
   .authCard {
-    padding: 28px 24px;
+    padding: 28px 22px;
+  }
+
+  .authCard h1 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroButtons {
+    flex-direction: column;
+  }
+
+  .bigBlueBtn,
+  .bigWhiteBtn {
+    width: 100%;
+  }
+
+  .targetUsersGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lowerHome {
+    padding: 8px 14px 28px;
+  }
+
+  .whyCard {
+    padding: 18px 16px 22px;
   }
 }
 

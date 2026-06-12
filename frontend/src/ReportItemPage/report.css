@@ -421,3 +421,54 @@
 .btn-submit-report {
   min-width: 140px;
 }
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .report-form-container {
+    padding: 16px 14px 40px;
+  }
+
+  .report-step-panel {
+    padding: 20px 16px;
+  }
+
+  .stepper-progress-bar {
+    margin-bottom: 24px;
+  }
+
+  .step-circle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .step-label {
+    font-size: 10px;
+  }
+
+  .predefined-locations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step-actions {
+    flex-direction: column-reverse;
+  }
+
+  .step-actions .btn-primary,
+  .step-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .status-selector-row {
+    flex-direction: column;
+  }
+
+  .status-btn {
+    height: 52px;
+  }
+
+  .summary-row dt {
+    min-width: 80px;
+  }
+}

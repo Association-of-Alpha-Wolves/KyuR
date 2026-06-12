@@ -27,7 +27,7 @@
   background: #fff;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 300;
   flex-shrink: 0;
 }
 
@@ -483,4 +483,29 @@
   background: #f3f4f6;
   color: #374151;
   border: 1px solid #e5e7eb;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: 0 16px;
+    min-height: 54px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .topbar-nav {
+    display: none;
+  }
+
+  .topbar-search-mock {
+    max-width: 100%;
+    flex: 1;
+  }
+
+  .error-panel {
+    margin: 40px 16px;
+    padding: 28px 20px;
+  }
 }

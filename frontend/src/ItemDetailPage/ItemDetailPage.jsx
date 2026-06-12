@@ -7,7 +7,7 @@ import ChatPanel from './ChatPanel'
 import UpdateStatusModal from './UpdateStatusModal'
 import DeleteConfirmModal from './DeleteConfirmModal'
 import Brand from '../components/Brand'
-import { Search, LogOut } from 'lucide-react'
+import { Search, LogOut, Menu, X } from 'lucide-react'
 import NavChatDropdown from '../components/NavChatDropdown'
 import { useSocket } from '../context/SocketContext'
 
@@ -36,6 +36,7 @@ export default function ItemDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isSavingStatus, setIsSavingStatus] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   // Use the global socket context
   const socket = useSocket()
@@ -155,40 +156,46 @@ export default function ItemDetailPage() {
           <Link to="/" className="brandLink" style={{ flexShrink: 0, marginRight: 8 }}>
             <Brand />
           </Link>
-          
           <nav className="navLinks" style={{ justifyContent: "flex-start", marginRight: "auto" }}>
             <Link to="/items">Hall of Lost and Found</Link>
             <Link to="/profile">Management</Link>
             <Link to="/about">About</Link>
           </nav>
-
           <form className="navSearch" onSubmit={submitSearch}>
             <button type="submit" style={{ background: 'none', border: 'none', padding: 0, display: 'flex', alignItems: 'center' }}>
               <Search size={16} />
             </button>
-            <input
-              type="search"
-              value={draftSearch}
-              onChange={(e) => setDraftSearch(e.target.value)}
-              placeholder="Search for an item"
-            />
+            <input type="search" value={draftSearch} onChange={(e) => setDraftSearch(e.target.value)} placeholder="Search for an item" />
           </form>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link className="reportBtn" to="/items/report">
-              Report Lost Item
-            </Link>
-          <NavChatDropdown />
-            <button 
-              onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} 
-              className="btn-secondary" 
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px' }}
-              title="Logout"
-            >
+          <div className="navActions">
+            <Link className="reportBtn" to="/items/report">Report Lost Item</Link>
+            <NavChatDropdown />
+            <button onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} className="btn-secondary navIconBtn" title="Logout">
               <LogOut size={20} />
             </button>
           </div>
+          <button className="nav-hamburger" onClick={() => setMobileNavOpen(!mobileNavOpen)} aria-label="Toggle menu">
+            {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </header>
+        {mobileNavOpen && (
+          <div className="mobile-nav-overlay" onClick={() => setMobileNavOpen(false)}>
+            <nav className="mobile-nav-menu" onClick={(e) => e.stopPropagation()}>
+              <div className="mobile-nav-links">
+                <Link to="/items" onClick={() => setMobileNavOpen(false)}>Hall of Lost and Found</Link>
+                <Link to="/profile" onClick={() => setMobileNavOpen(false)}>Management</Link>
+                <Link to="/about" onClick={() => setMobileNavOpen(false)}>About</Link>
+              </div>
+              <hr className="mobile-nav-divider" />
+              <div className="mobile-nav-actions">
+                <Link className="reportBtn mobile-full-btn" to="/items/report" onClick={() => setMobileNavOpen(false)}>Report Lost Item</Link>
+                <button onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} className="btn-secondary mobile-full-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <LogOut size={18} /> Logout
+                </button>
+              </div>
+            </nav>
+          </div>
+        )}
         <div className="custom-scroll-container">
           <div className="error-panel">
             {/* Lucide AlertOctagon Icon */}
@@ -209,47 +216,54 @@ export default function ItemDetailPage() {
   }
 
   return (
+    <>
     <main className="app-shell min-height-screen">
       {/* Dynamic Header */}
       <header className="kyurNav" style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-        <Link to="/" className="brandLink" style={{ flexShrink: 0, marginRight: 8 }}>
+        <Link to="/" className="brandLink" style={{ flexShrink: 0, marginRight: 8 }} onClick={() => setMobileNavOpen(false)}>
           <Brand />
         </Link>
-        
         <nav className="navLinks" style={{ justifyContent: "flex-start", marginRight: "auto" }}>
           <Link to="/items">Hall of Lost and Found</Link>
           <Link to="/profile">Management</Link>
           <Link to="/about">About</Link>
         </nav>
-
-        {/* Global Search Bar */}
         <form className="navSearch" onSubmit={submitSearch}>
           <button type="submit" style={{ background: 'none', border: 'none', padding: 0, display: 'flex', alignItems: 'center' }}>
             <Search size={16} />
           </button>
-          <input
-            type="search"
-            value={draftSearch}
-            onChange={(e) => setDraftSearch(e.target.value)}
-            placeholder="Search for an item"
-          />
+          <input type="search" value={draftSearch} onChange={(e) => setDraftSearch(e.target.value)} placeholder="Search for an item" />
         </form>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link className="reportBtn" to="/items/report">
-            Report Lost Item
-          </Link>
+        <div className="navActions">
+          <Link className="reportBtn" to="/items/report">Report Lost Item</Link>
           <NavChatDropdown />
-          <button 
-            onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} 
-            className="btn-secondary" 
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px', minWidth: '40px', minHeight: '40px' }}
-            title="Logout"
-          >
+          <button onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} className="btn-secondary navIconBtn" title="Logout">
             <LogOut size={20} />
           </button>
         </div>
+        <button className="nav-hamburger" onClick={() => setMobileNavOpen(!mobileNavOpen)} aria-label="Toggle menu">
+          {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </header>
+
+      {mobileNavOpen && (
+        <div className="mobile-nav-overlay" onClick={() => setMobileNavOpen(false)}>
+          <nav className="mobile-nav-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-nav-links">
+              <Link to="/items" onClick={() => setMobileNavOpen(false)}>Hall of Lost and Found</Link>
+              <Link to="/profile" onClick={() => setMobileNavOpen(false)}>Management</Link>
+              <Link to="/about" onClick={() => setMobileNavOpen(false)}>About</Link>
+            </div>
+            <hr className="mobile-nav-divider" />
+            <div className="mobile-nav-actions">
+              <Link className="reportBtn mobile-full-btn" to="/items/report" onClick={() => setMobileNavOpen(false)}>Report Lost Item</Link>
+              <button onClick={() => { localStorage.removeItem('kyurToken'); window.location.href='/login'; }} className="btn-secondary mobile-full-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <LogOut size={18} /> Logout
+              </button>
+            </div>
+          </nav>
+        </div>
+      )}
 
       {/* Main Two-Panel Layout */}
       <div className="custom-scroll-container">
@@ -306,5 +320,6 @@ export default function ItemDetailPage() {
         )}
       </div>
     </main>
+    </>
   )
 }
