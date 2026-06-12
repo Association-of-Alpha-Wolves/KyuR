@@ -74,7 +74,10 @@ export const initializeSocket = (httpServer) => {
 
     // ── send_message ───────────────────────────────────────────────────────────
     socket.on('send_message', async ({ conversationId, itemId, content }) => {
+      console.log('[send_message] received', { conversationId, itemId, userId: socket.data.userId, contentLen: content?.length });
+
       if (!conversationId || !itemId || !content?.trim()) {
+        console.warn('[send_message] REJECTED — missing field', { conversationId: !!conversationId, itemId: !!itemId, hasContent: !!content?.trim() });
         socket.emit('error', { message: 'conversationId, itemId, and content are required' });
         return;
       }
@@ -82,6 +85,7 @@ export const initializeSocket = (httpServer) => {
       try {
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) {
+          console.warn('[send_message] REJECTED — conversation not found:', conversationId);
           socket.emit('error', { message: 'Conversation not found' });
           return;
         }
@@ -91,7 +95,10 @@ export const initializeSocket = (httpServer) => {
         const isReporterSender = conversation.reporter.toString() === userId;
         const isFinderSender = conversation.finder.toString() === userId;
 
+        console.log('[send_message] auth check', { reporter: conversation.reporter.toString(), finder: conversation.finder.toString(), userId, isReporterSender, isFinderSender });
+
         if (!isReporterSender && !isFinderSender) {
+          console.warn('[send_message] REJECTED — not a participant');
           socket.emit('error', { message: 'Not authorized to send messages in this conversation' });
           return;
         }
@@ -126,6 +133,7 @@ export const initializeSocket = (httpServer) => {
           }
         }
 
+        console.log('[send_message] creating message', { conversationId, itemId, sender: userId, receiver: receiverId });
         const newMessage = await Message.create({
           conversation: conversationId,
           item: itemId,
@@ -133,6 +141,7 @@ export const initializeSocket = (httpServer) => {
           receiver: receiverId,
           content: content.trim(),
         });
+        console.log('[send_message] message saved to DB:', newMessage._id.toString());
 
         // Update conversation timestamp manually
         conversation.updatedAt = new Date();
@@ -159,7 +168,7 @@ export const initializeSocket = (httpServer) => {
           isMuted: conversation.mutedBy && conversation.mutedBy.some(id => id.toString() === receiverId)
         });
       } catch (err) {
-        console.error(`send_message error (room: ${conversationId}):`, err.message);
+        console.error(`[send_message] CAUGHT ERROR (room: ${conversationId}):`, err);
         socket.emit('error', { message: 'Failed to send message. Please try again.' });
       }
     });
