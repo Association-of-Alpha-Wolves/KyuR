@@ -47,6 +47,11 @@ export const getOrCreateConversation = asyncHandler(async (req, res) => {
     });
   }
 
+  await conversation.populate([
+    { path: 'reporter', select: 'name _id' },
+    { path: 'finder', select: 'name _id' },
+  ]);
+
   res.status(200).json({
     success: true,
     data: conversation,
@@ -217,7 +222,8 @@ export const moderateConversation = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  const index = conversation[targetArray].indexOf(userId);
+  const idStr = userId.toString();
+  const index = conversation[targetArray].findIndex(id => id.toString() === idStr);
   if (value && index === -1) {
     conversation[targetArray].push(userId);
   } else if (!value && index !== -1) {

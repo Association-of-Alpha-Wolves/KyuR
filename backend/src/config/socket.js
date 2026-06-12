@@ -73,21 +73,33 @@ export const initializeSocket = (httpServer) => {
     });
 
     // ── send_message ───────────────────────────────────────────────────────────
-    socket.on('send_message', async ({ conversationId, itemId, receiverId, content }) => {
-      console.log('--- send_message payload ---', { conversationId, itemId, receiverId, content });
-      if (!conversationId || !itemId || !receiverId || !content?.trim()) {
-        console.error('send_message validation failed:', { conversationId, itemId, receiverId, content });
-        socket.emit('error', { message: 'conversationId, itemId, receiverId, and content are required' });
+    socket.on('send_message', async ({ conversationId, itemId, content }) => {
+      if (!conversationId || !itemId || !content?.trim()) {
+        socket.emit('error', { message: 'conversationId, itemId, and content are required' });
         return;
       }
 
       try {
-        // Validate conversation
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) {
           socket.emit('error', { message: 'Conversation not found' });
           return;
         }
+
+        // Verify sender is a conversation participant
+        const userId = socket.data.userId;
+        const isReporterSender = conversation.reporter.toString() === userId;
+        const isFinderSender = conversation.finder.toString() === userId;
+
+        if (!isReporterSender && !isFinderSender) {
+          socket.emit('error', { message: 'Not authorized to send messages in this conversation' });
+          return;
+        }
+
+        // Derive receiverId from conversation — never trust the client
+        const receiverId = isReporterSender
+          ? conversation.finder.toString()
+          : conversation.reporter.toString();
 
         if (conversation.blockedBy && conversation.blockedBy.length > 0) {
           socket.emit('error', { message: 'This conversation has been blocked and you cannot send messages' });
@@ -102,12 +114,12 @@ export const initializeSocket = (httpServer) => {
         }
 
         // Enforce 3 message limit for finders in pending state
-        if (conversation.status === 'pending' && conversation.finder.toString() === socket.data.userId) {
+        if (conversation.status === 'pending' && isFinderSender) {
           const messageCount = await Message.countDocuments({
             conversation: conversationId,
-            sender: socket.data.userId
+            sender: userId
           });
-          
+
           if (messageCount >= 3) {
             socket.emit('error', { message: 'You can only send up to 3 messages before the reporter accepts your chat request.' });
             return;
@@ -117,7 +129,7 @@ export const initializeSocket = (httpServer) => {
         const newMessage = await Message.create({
           conversation: conversationId,
           item: itemId,
-          sender: socket.data.userId,
+          sender: userId,
           receiver: receiverId,
           content: content.trim(),
         });
@@ -131,14 +143,20 @@ export const initializeSocket = (httpServer) => {
           { path: 'receiver', select: 'name _id' },
         ]);
 
-        // Emit only to sockets in this conversation's room
+        // Ensure sender is in the room — handles the race condition where send_message
+        // arrives before the async join_room handler has called socket.join()
+        if (!socket.rooms.has(conversationId)) {
+          socket.join(conversationId);
+        }
+
+        // Emit to everyone in the room (including sender)
         io.to(conversationId).emit('receive_message', populated);
 
         // Emit notification to the receiver's personal room
         io.to(`user_${receiverId}`).emit('new_message_notification', {
           message: populated,
           conversationId,
-          isMuted: conversation.mutedBy && conversation.mutedBy.includes(receiverId)
+          isMuted: conversation.mutedBy && conversation.mutedBy.some(id => id.toString() === receiverId)
         });
       } catch (err) {
         console.error(`send_message error (room: ${conversationId}):`, err.message);

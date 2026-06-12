@@ -162,24 +162,9 @@ export default function ChatPanel({ itemId, conversationId: initialConvId, curre
       socket.emit('stop_typing', { conversationId: activeConvId })
     }
 
-    // Receiver is the other participant
-    const receiverId = isReporter 
-      ? conversation?.finder?._id || conversation?.finder 
-      : reporterId
-
-    console.log('Sending message:', {
-      conversationId: activeConvId,
-      itemId,
-      receiverId,
-      content: newMessage.trim(),
-      isReporter,
-      reporterId
-    })
-
     socket.emit('send_message', {
       conversationId: activeConvId,
       itemId,
-      receiverId,
       content: newMessage.trim()
     })
 
