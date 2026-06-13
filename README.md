@@ -93,9 +93,11 @@ The frontend runs on port `5173` by default.
 <div align="left">
   <h3>Documentation Demo</h3>
   
-  <video src="documentationAssets\ShortDemo.mp4" width="100%" controls>
-    Your browser does not support the video tag.
-  </video>
+  <a href="https://www.youtube.com/watch?v=jNQOviCLUbI" target="_blank">
+    <img src="https://img.youtube.com/vi/jNQOviCLUbI/maxresdefault.jpg" alt="Documentation Demo Video" width="80%" />
+  </a>
+  <br>
+  <i>Click the image to watch the demo on YouTube.</i>
 </div>
 
 
